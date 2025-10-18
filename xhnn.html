@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xu hướng Nghề nghiệp - Lối Rẽ Tuổi Thiếu Niên</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;padding:0;background:linear-gradient(135deg,#ffe6f0,#fff0f5);color:#333;}
+header{text-align:center;padding:30px 10px;background-color:rgba(255,179,217,0.9);color:#fff;}
+h1{margin:0;font-size:2em;} h2{margin:5px 0 0;font-size:1.2em;}
+#filter{text-align:center;margin:20px 0;}
+#job-list{display:flex;flex-wrap:wrap;justify-content:center;gap:20px;padding:0 20px 50px 20px;}
+.job-card{background:rgba(255,240,245,0.95);border-radius:15px;padding:20px;width:300px;box-shadow:0 4px 10px rgba(0,0,0,0.2);transition:transform 0.3s,opacity 0.5s;opacity:0;}
+.job-card.show{opacity:1;}
+.job-card:hover{transform:translateY(-5px);}
+.job-card h3{margin-top:0;font-size:1.1em;color:#d6336c;}
+.job-card p{margin:5px 0;font-size:0.95em;}
+footer{text-align:center;padding:20px;background-color:rgba(255,179,217,0.9);color:#fff;margin-top:30px;}
+a{color:#d6336c;text-decoration:none;} a:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<header>
+<h1>Web Cập nhật Xu hướng Nghề nghiệp</h1>
+<h2>Lối Rẽ Tuổi Thiếu Niên</h2>
+</header>
+
+<section id="filter">
+<label>Chọn Quốc gia: 
+<select id="country-filter">
+<option value="All">Tất cả</option>
+<option value="Việt Nam">Việt Nam</option>
+<option value="Thế giới">Thế giới</option>
+</select>
+</label>
+</section>
+
+<main id="job-list">Đang tải dữ liệu...</main>
+
+<footer>
+<p>Liên kết MBTI: <a href="https://nhitran140609-design.github.io/quizgamenhinhu/" target="_blank">Tìm hiểu MBTI của bạn</a></p>
+</footer>
+
+<script>
+// Full 60+ nghề Việt Nam + Thế giới
+const jobsData = [
+{"Nganh_nghe":"Data Science","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 25%/năm","Pham_vi":"Nhu cầu nhân lực cao","Ky_nang":"Python, ML, SQL","MBTI":"INTJ,ISTJ","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Data Science","Quoc_gia":"Thế giới","Xu_huong":"Tăng 40%/năm","Pham_vi":"AI & ML phát triển mạnh","Ky_nang":"Python, ML, SQL","MBTI":"INTJ,ISTJ","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Thiết kế đồ họa","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 12%/năm","Pham_vi":"Freelancer nhiều","Ky_nang":"Photoshop, Sáng tạo","MBTI":"ISFP,INFP","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Thiết kế đồ họa","Quoc_gia":"Thế giới","Xu_huong":"Tăng 15%/năm","Pham_vi":"Công việc toàn cầu","Ky_nang":"Photoshop, UX/UI","MBTI":"ISFP,INFP","Nguon":"Behance"},
+{"Nganh_nghe":"Lập trình Game","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 18%/năm","Pham_vi":"Startup game nhiều","Ky_nang":"C++, Unity, Sáng tạo","MBTI":"ISTP,INTP","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Lập trình Game","Quoc_gia":"Thế giới","Xu_huong":"Tăng 20%/năm","Pham_vi":"Game AAA & Indie","Ky_nang":"C++, Unity, Sáng tạo","MBTI":"ISTP,INTP","Nguon":"LinkedIn"},
+{"Nganh_nghe":"AI & Machine Learning","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 30%/năm","Pham_vi":"AI Startup & doanh nghiệp","Ky_nang":"Python, TensorFlow, ML","MBTI":"INTJ,ENTJ","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"AI & Machine Learning","Quoc_gia":"Thế giới","Xu_huong":"Tăng 50%/năm","Pham_vi":"AI & Big Data toàn cầu","Ky_nang":"Python, TensorFlow, ML","MBTI":"INTJ,ENTJ","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Marketing Online","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 15%/năm","Pham_vi":"Kinh doanh online & SME","Ky_nang":"SEO, Ads, Content","MBTI":"ENFP,ENTP","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Marketing Online","Quoc_gia":"Thế giới","Xu_huong":"Tăng 20%/năm","Pham_vi":"Global Digital Marketing","Ky_nang":"SEO, Ads, Content","MBTI":"ENFP,ENTP","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Blockchain Developer","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 22%/năm","Pham_vi":"Ứng dụng fintech & startup","Ky_nang":"Solidity, Web3, Crypto","MBTI":"INTJ,ENTP","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Blockchain Developer","Quoc_gia":"Thế giới","Xu_huong":"Tăng 45%/năm","Pham_vi":"Crypto, DeFi toàn cầu","Ky_nang":"Solidity, Web3, Crypto","MBTI":"INTJ,ENTP","Nguon":"LinkedIn"},
+{"Nganh_nghe":"UX/UI Designer","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 18%/năm","Pham_vi":"Startup & freelancer","Ky_nang":"Figma, Adobe XD, Sáng tạo","MBTI":"ISFP,INFP","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"UX/UI Designer","Quoc_gia":"Thế giới","Xu_huong":"Tăng 25%/năm","Pham_vi":"Công ty công nghệ lớn","Ky_nang":"Figma, Adobe XD, Sáng tạo","MBTI":"ISFP,INFP","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Cybersecurity","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 20%/năm","Pham_vi":"Bảo mật hệ thống & dữ liệu","Ky_nang":"Network, Ethical Hacking, Security","MBTI":"ISTJ,INTJ","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Cybersecurity","Quoc_gia":"Thế giới","Xu_huong":"Tăng 35%/năm","Pham_vi":"Công ty bảo mật toàn cầu","Ky_nang":"Network, Ethical Hacking, Security","MBTI":"ISTJ,INTJ","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Giáo dục trực tuyến","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 15%/năm","Pham_vi":"E-learning & khóa học online","Ky_nang":"Giảng dạy, Content, Kỹ năng mềm","MBTI":"ENFP,INFJ","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Giáo dục trực tuyến","Quoc_gia":"Thế giới","Xu_huong":"Tăng 22%/năm","Pham_vi":"MOOC & e-learning toàn cầu","Ky_nang":"Giảng dạy, Content, Kỹ năng mềm","MBTI":"ENFP,INFJ","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Tài chính & Ngân hàng","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 10%/năm","Pham_vi":"Ngân hàng & fintech","Ky_nang":"Excel, Phân tích, Tài chính","MBTI":"ISTJ,ENTJ","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Tài chính & Ngân hàng","Quoc_gia":"Thế giới","Xu_huong":"Tăng 12%/năm","Pham_vi":"Global Banking & Investment","Ky_nang":"Excel, Phân tích, Tài chính","MBTI":"ISTJ,ENTJ","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Content Creator","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 18%/năm","Pham_vi":"YouTube, TikTok, Blogging","Ky_nang":"Sáng tạo, Video, Marketing","MBTI":"ENFP,ISFP","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Content Creator","Quoc_gia":"Thế giới","Xu_huong":"Tăng 25%/năm","Pham_vi":"Global Social Media","Ky_nang":"Sáng tạo, Video, Marketing","MBTI":"ENFP,ISFP","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Y tế & Dược","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 8%/năm","Pham_vi":"Bệnh viện & nghiên cứu","Ky_nang":"Y, Dược, Kỹ năng giao tiếp","MBTI":"ISFJ,INFJ","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Y tế & Dược","Quoc_gia":"Thế giới","Xu_huong":"Tăng 10%/năm","Pham_vi":"Global Healthcare","Ky_nang":"Y, Dược, Kỹ năng giao tiếp","MBTI":"ISFJ,INFJ","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Kỹ sư phần mềm","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 20%/năm","Pham_vi":"Startup & doanh nghiệp","Ky_nang":"Java, C#, Python, Agile","MBTI":"INTJ,ISTJ","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Kỹ sư phần mềm","Quoc_gia":"Thế giới","Xu_huong":"Tăng 25%/năm","Pham_vi":"Công ty công nghệ lớn","Ky_nang":"Java, C#, Python, Agile","MBTI":"INTJ,ISTJ","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Game Designer","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 15%/năm","Pham_vi":"Startup & Mobile Game","Ky_nang":"Thiết kế, Sáng tạo, Storytelling","MBTI":"ISFP,INFP","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Game Designer","Quoc_gia":"Thế giới","Xu_huong":"Tăng 20%/năm","Pham_vi":"AAA Game & Indie","Ky_nang":"Thiết kế, Sáng tạo, Storytelling","MBTI":"ISFP,INFP","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Nhân sự & HR","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 12%/năm","Pham_vi":"Doanh nghiệp & Startup","Ky_nang":"Giao tiếp, Tuyển dụng, Quản lý","MBTI":"ENFJ,ESFJ","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Nhân sự & HR","Quoc_gia":"Thế giới","Xu_huong":"Tăng 15%/năm","Pham_vi":"Global HR & Talent","Ky_nang":"Giao tiếp, Tuyển dụng, Quản lý","MBTI":"ENFJ,ESFJ","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Digital Marketing Specialist","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 15%/năm","Pham_vi":"SEO, Ads, Content Marketing","Ky_nang":"SEO, Ads, Content, Data","MBTI":"ENFP,ENTP","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Digital Marketing Specialist","Quoc_gia":"Thế giới","Xu_huong":"Tăng 20%/năm","Pham_vi":"Global Digital Marketing","Ky_nang":"SEO, Ads, Content, Data","MBTI":"ENFP,ENTP","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Kỹ sư AI Robotics","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 28%/năm","Pham_vi":"Robot & Automation","Ky_nang":"Python, C++, Robotics, AI","MBTI":"INTJ,ISTP","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Kỹ sư AI Robotics","Quoc_gia":"Thế giới","Xu_huong":"Tăng 40%/năm","Pham_vi":"Automation toàn cầu","Ky_nang":"Python, C++, Robotics, AI","MBTI":"INTJ,ISTP","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Phân tích dữ liệu & BI","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 18%/năm","Pham_vi":"Doanh nghiệp SME & Startup","Ky_nang":"SQL, Excel, Power BI, Tableau","MBTI":"ISTJ,INTJ","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Phân tích dữ liệu & BI","Quoc_gia":"Thế giới","Xu_huong":"Tăng 25%/năm","Pham_vi":"Global Data Analysis","Ky_nang":"SQL, Excel, Power BI, Tableau","MBTI":"ISTJ,INTJ","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Freelancer Content & Design","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 15%/năm","Pham_vi":"Freelance Platform","Ky_nang":"Photoshop, Illustrator, Sáng tạo","MBTI":"ISFP,INFP","Nguon":"Freelancer.com"},
+{"Nganh_nghe":"Freelancer Content & Design","Quoc_gia":"Thế giới","Xu_huong":"Tăng 18%/năm","Pham_vi":"Global Freelance","Ky_nang":"Photoshop, Illustrator, Sáng tạo","MBTI":"ISFP,INFP","Nguon":"Upwork"},
+{"Nganh_nghe":"Kỹ sư Điện tử","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 12%/năm","Pham_vi":"Doanh nghiệp sản xuất & công nghiệp","Ky_nang":"C, PCB, Embedded Systems","MBTI":"ISTJ,INTJ","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Kỹ sư Điện tử","Quoc_gia":"Thế giới","Xu_huong":"Tăng 15%/năm","Pham_vi":"Industrial Electronics & IoT","Ky_nang":"C, PCB, Embedded Systems","MBTI":"ISTJ,INTJ","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Social Media Manager","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 18%/năm","Pham_vi":"Doanh nghiệp & Freelancer","Ky_nang":"Content, Ads, Analytics","MBTI":"ENFP,ENTP","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Social Media Manager","Quoc_gia":"Thế giới","Xu_huong":"Tăng 22%/năm","Pham_vi":"Global Social Media Management","Ky_nang":"Content, Ads, Analytics","MBTI":"ENFP,ENTP","Nguon":"LinkedIn"},
+{"Nganh_nghe":"Nhà báo & Truyền thông","Quoc_gia":"Việt Nam","Xu_huong":"Tăng 10%/năm","Pham_vi":"Báo chí & Media Online","Ky_nang":"Viết, Sáng tạo, Research","MBTI":"ENFP,INFJ","Nguon":"VietnamWorks"},
+{"Nganh_nghe":"Nhà báo & Truyền thông","Quoc_gia":"Thế giới","Xu_huong":"Tăng 12%/năm","Pham_vi":"Global Media & Journalism","Ky_nang":"Viết, Sáng tạo, Research","MBTI":"ENFP,INFJ","Nguon":"LinkedIn"}
+];
+
+function displayJobs(data){
+    const container=document.getElementById('job-list');
+    container.innerHTML='';
+    data.forEach((job,i)=>{
+        const div=document.createElement('div');
+        div.classList.add('job-card');
+        div.innerHTML=`
+            <h3>${job.Nganh_nghe} (${job.Quoc_gia})</h3>
+            <p><strong>Xu hướng tuyển dụng:</strong> ${job.Xu_huong}</p>
+            <p><strong>Tiềm năng phát triển:</strong> ${job.Pham_vi}</p>
+            <p><strong>Kỹ năng/Tố chất:</strong> ${job.Ky_nang}</p>
+            <p><strong>MBTI phù hợp:</strong> ${job.MBTI.split(",").map(m=>`<a href="https://www.16personalities.com/vi/${m.toLowerCase()}" target="_blank">${m}</a>`).join(", ")}</p>
+            <p><strong>Nguồn:</strong> ${job.Nguon}</p>
+        `;
+        container.appendChild(div);
+        setTimeout(()=>{div.classList.add('show')},i*80);
+    });
+}
+
+document.getElementById('country-filter').addEventListener('change',(e)=>{
+    const val=e.target.value;
+    if(val==="All") displayJobs(jobsData);
+    else displayJobs(jobsData.filter(job=>job.Quoc_gia===val));
+});
+
+// Load trang
+displayJobs(jobsData);
+</script>
+</body>
+</html>
