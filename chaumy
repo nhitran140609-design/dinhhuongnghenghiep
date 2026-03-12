@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Du Lịch Châu Mỹ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+
+        :root {
+            --bg: #f0f8ff;
+            --primary: #ff6b6b;
+            --secondary: #4ecdc4;
+            --text: #2d3436;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1, h2 { color: var(--primary); }
+
+        .hidden { display: none !important; }
+
+        /* Setup Screen */
+        .emoji-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .emoji-btn {
+            font-size: 30px;
+            background: #f1f2f6;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            padding: 10px;
+            transition: 0.2s;
+        }
+
+        .emoji-btn.selected {
+            background: #ffeaa7;
+            border-color: #fdcb6e;
+            transform: scale(1.1);
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #dfe6e9;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-family: inherit;
+        }
+
+        button.action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 5px;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        button.action-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,107,107,0.4); }
+        button.action-btn.green { background: var(--secondary); }
+        button.action-btn.green:hover { box-shadow: 0 5px 15px rgba(78,205,196,0.4); }
+
+        .player-list {
+            margin-top: 20px;
+            text-align: left;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        /* Game Screen */
+        .player-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffeaa7;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .question-box {
+            background: #f1f2f6;
+            padding: 30px 20px;
+            border-radius: 15px;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .answer-btns {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .answer-btns button {
+            flex: 1;
+            padding: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            color: white;
+            transition: 0.2s;
+        }
+
+        .btn-true { background: #2ecc71; }
+        .btn-true:hover { background: #27ae60; transform: scale(1.05); }
+        .btn-false { background: #e74c3c; }
+        .btn-false:hover { background: #c0392b; transform: scale(1.05); }
+
+        .feedback {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            height: 30px;
+        }
+
+        /* Leaderboard */
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f1f2f6;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .rank-1 { background: #ffd32a; color: #d35400; font-size: 22px; }
+        .rank-2 { background: #dcdde1; }
+        .rank-3 { background: #e1b12c; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="setup-screen">
+    <h1>🌍 Khám Phá Châu Mỹ ✈️</h1>
+    <p>Nhập tên, chọn nhân vật và phụ kiện để tham gia!</p>
+    
+    <input type="text" id="player-name" placeholder="Nhập tên người chơi..." autocomplete="off">
+    
+    <h3>Chọn Nhân vật:</h3>
+    <div class="emoji-grid" id="characters">
+        <button class="emoji-btn selected" onclick="selectChar(this, '🐶')">🐶</button>
+        <button class="emoji-btn" onclick="selectChar(this, '🦊')">🦊</button>
+        <button class="emoji-btn" onclick="selectChar(this, '🦁')">🦁</button>
+        <button class="emoji-btn" onclick="selectChar(this, '🐱')">🐱</button>
+        <button class="emoji-btn" onclick="selectChar(this, '🐷')">🐷</button>
+    </div>
+
+    <h3>Chọn Phụ kiện:</h3>
+    <div class="emoji-grid" id="accessories">
+        <button class="emoji-btn selected" onclick="selectAcc(this, '🌸')">🌸</button>
+        <button class="emoji-btn" onclick="selectAcc(this, '🌷')">🌷</button>
+        <button class="emoji-btn" onclick="selectAcc(this, '🐙')">🐙</button>
+        <button class="emoji-btn" onclick="selectAcc(this, '🐳')">🐳</button>
+        <button class="emoji-btn" onclick="selectAcc(this, '🍌')">🍌</button>
+        <button class="emoji-btn" onclick="selectAcc(this, '🥨')">🥨</button>
+        <button class="emoji-btn" onclick="selectAcc(this, '🌈')">🌈</button>
+        <button class="emoji-btn" onclick="selectAcc(this, '🌟')">🌟</button>
+        <button class="emoji-btn" onclick="selectAcc(this, '👑')">👑</button>
+        <button class="emoji-btn" onclick="selectAcc(this, '🧢')">🧢</button>
+    </div>
+
+    <button class="action-btn" onclick="addPlayer()">➕ Thêm Người Chơi</button>
+    <button class="action-btn green" onclick="startGame()">🚀 Bắt Đầu Game</button>
+
+    <div class="player-list" id="player-list">
+        <strong>Danh sách người chơi:</strong>
+        <ul id="list-ul"></ul>
+    </div>
+</div>
+
+<div class="container hidden" id="game-screen">
+    <div class="player-status">
+        <div id="current-avatar">🐶👑 Player 1</div>
+        <div>
+            <span id="current-stars">⭐ 0</span> | 
+            <span id="current-hearts">❤️ 5</span>
+        </div>
+    </div>
+    
+    <h3 id="question-counter">Câu hỏi 1/20</h3>
+    <div class="question-box" id="question-text">Đang tải câu hỏi...</div>
+    
+    <div class="answer-btns">
+        <button class="btn-true" onclick="answerQuestion(true)">✔️ ĐÚNG</button>
+        <button class="btn-false" onclick="answerQuestion(false)">❌ SAI</button>
+    </div>
+    
+    <div class="feedback" id="feedback-text"></div>
+</div>
+
+<div class="container hidden" id="result-screen">
+    <h1>🏆 BẢNG XẾP HẠNG 🏆</h1>
+    <div id="leaderboard"></div>
+    <br>
+    <button class="action-btn green" onclick="location.reload()">🔄 Chơi Lại Từ Đầu</button>
+</div>
+
+<script>
+    // Bộ 20 câu hỏi về Du lịch Châu Mỹ
+    const questionBank = [
+        { q: "Tượng Nữ thần Tự do nằm ở thủ đô Washington D.C của nước Mỹ.", a: false, exp: "Sai. Tượng Nữ thần Tự do nằm ở thành phố New York." },
+        { q: "Machu Picchu là một di tích nổi tiếng của người Inca nằm ở quốc gia Peru.", a: true, exp: "Đúng. Đây là một trong 7 kỳ quan thế giới mới." },
+        { q: "Thác Niagara là thác nước nổi tiếng nằm trên đường biên giới giữa Mỹ và Canada.", a: true, exp: "Đúng. Thác này thu hút hàng triệu du khách mỗi năm." },
+        { q: "Dòng sông Amazon huyền thoại chảy qua khu vực Bắc Mỹ.", a: false, exp: "Sai. Sông Amazon nằm ở Nam Mỹ." },
+        { q: "Cancun là một thành phố biển du lịch nổi tiếng thế giới của đất nước Mexico.", a: true, exp: "Đúng. Cancun nổi tiếng với biển xanh cát trắng." },
+        { q: "Tượng Chúa Cứu Thế (Christ the Redeemer) khổng lồ nằm ở thành phố Rio de Janeiro, Brazil.", a: true, exp: "Đúng. Đây là biểu tượng du lịch của Brazil." },
+        { q: "Thành phố Las Vegas được mệnh danh là 'Thủ đô giải trí của thế giới'.", a: true, exp: "Đúng. Nơi đây nổi tiếng với các casino và show diễn." },
+        { q: "Quần đảo Galapagos, nổi tiếng với hệ sinh thái độc đáo, thuộc sở hữu của đất nước Chile.", a: false, exp: "Sai. Quần đảo này thuộc chủ quyền của Ecuador." },
+        { q: "Canada là quốc gia có diện tích lớn thứ hai trên thế giới (chỉ sau Nga).", a: true, exp: "Đúng. Canada chiếm phần lớn khu vực Bắc Mỹ." },
+        { q: "Hồ Titicaca ở Nam Mỹ là hồ nước ngọt có thể đi tàu thủy cao nhất thế giới.", a: true, exp: "Đúng. Hồ nằm ở biên giới giữa Peru và Bolivia." },
+        { q: "Vườn quốc gia Yellowstone ở Mỹ là vườn quốc gia đầu tiên trên thế giới.", a: true, exp: "Đúng. Được thành lập vào năm 1872." },
+        { q: "Sa mạc Atacama ở Chile được ghi nhận là nơi khô hạn nhất trên thế giới.", a: true, exp: "Đúng. Có những nơi ở đây hàng chục năm không có mưa." },
+        { q: "Kênh đào Panama là công trình nhân tạo nối liền Thái Bình Dương và Đại Tây Dương.", a: true, exp: "Đúng. Đây là tuyến đường thủy huyết mạch của du lịch và thương mại." },
+        { q: "Cầu Cổng Vàng (Golden Gate Bridge) biểu tượng của nước Mỹ nằm ở thành phố Los Angeles.", a: false, exp: "Sai. Cầu Cổng Vàng nằm ở thành phố San Francisco." },
+        { q: "Lễ hội Carnival ở Rio de Janeiro là một trong những lễ hội đường phố lớn nhất thế giới.", a: true, exp: "Đúng. Lễ hội thu hút hàng triệu du khách đến Brazil mỗi năm." },
+        { q: "Walt Disney World Resort - khu nghỉ dưỡng và công viên giải trí lớn nhất thế giới nằm ở bang California.", a: false, exp: "Sai. Nó nằm ở Orlando, bang Florida." },
+        { q: "Dãy núi Andes là dãy núi dài nhất thế giới, nằm trải dài ở khu vực Nam Mỹ.", a: true, exp: "Đúng. Dãy núi này đi qua 7 quốc gia Nam Mỹ." },
+        { q: "Cuba là quốc gia vùng biển Caribe nổi tiếng với xì gà và những chiếc xe ô tô cổ chạy trên phố.", a: true, exp: "Đúng. Đây là nét văn hóa du lịch đặc trưng của Cuba." },
+        { q: "Quần đảo Hawaii là một tiểu bang của Mỹ nằm hoàn toàn ở Châu Âu.", a: false, exp: "Sai. Hawaii nằm ở Thái Bình Dương (và thuộc Châu Mỹ về mặt chính trị)." },
+        { q: "Salar de Uyuni ở Bolivia là cánh đồng muối lớn nhất thế giới, được mệnh danh là 'tấm gương của bầu trời'.", a: true, exp: "Đúng. Đây là địa điểm check-in mơ ước của nhiều du khách." }
+    ];
+
+    let players = [];
+    let selectedChar = '🐶';
+    let selectedAcc = '🌸';
+    let currentQuestions = [];
+    let questionIndex = 0;
+    let turnIndex = 0; // Ai đang chơi
+
+    // Lựa chọn UI
+    function selectChar(btn, char) {
+        document.querySelectorAll('#characters .emoji-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedChar = char;
+    }
+
+    function selectAcc(btn, acc) {
+        document.querySelectorAll('#accessories .emoji-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedAcc = acc;
+    }
+
+    // Thêm người chơi
+    function addPlayer() {
+        const nameInput = document.getElementById('player-name');
+        const name = nameInput.value.trim();
+        
+        if (!name) {
+            alert("Vui lòng nhập tên người chơi!");
+            return;
+        }
+
+        players.push({
+            name: name,
+            char: selectedChar,
+            acc: selectedAcc,
+            stars: 0,
+            hearts: 5 // Mỗi người có 5 tim mặc định
+        });
+
+        nameInput.value = '';
+        updatePlayerList();
+    }
+
+    function updatePlayerList() {
+        const ul = document.getElementById('list-ul');
+        ul.innerHTML = '';
+        players.forEach(p => {
+            const li = document.createElement('li');
+            li.innerHTML = `${p.char}${p.acc} <b>${p.name}</b>`;
+            ul.appendChild(li);
+        });
+    }
+
+    // Xáo trộn mảng
+    function shuffleArray(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    // Bắt đầu game
+    function startGame() {
+        if (players.length === 0) {
+            alert("Cần ít nhất 1 người chơi để bắt đầu!");
+            return;
+        }
+
+        // Random 20 câu hỏi
+        currentQuestions = shuffleArray([...questionBank]).slice(0, 20);
+        
+        document.getElementById('setup-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        
+        loadTurn();
+    }
+
+    // Chuyển lượt
+    function loadTurn() {
+        // Kiểm tra kết thúc game (Hết 20 câu hoặc tất cả người chơi chết)
+        let activePlayers = players.filter(p => p.hearts > 0);
+        if (questionIndex >= 20 || activePlayers.length === 0) {
+            endGame();
+            return;
+        }
+
+        // Tìm người chơi tiếp theo còn sống
+        let p = players[turnIndex % players.length];
+        while (p.hearts <= 0) {
+            turnIndex++;
+            p = players[turnIndex % players.length];
+        }
+
+        // Hiển thị UI
+        document.getElementById('current-avatar').innerHTML = `${p.char}${p.acc} <b>${p.name}</b>`;
+        document.getElementById('current-stars').innerText = `⭐ ${p.stars}`;
+        document.getElementById('current-hearts').innerText = `❤️ ${p.hearts}`;
+        document.getElementById('question-counter').innerText = `Câu hỏi ${questionIndex + 1} / 20`;
+        document.getElementById('question-text').innerText = currentQuestions[questionIndex].q;
+        
+        // Bật lại nút
+        const btns = document.querySelectorAll('.answer-btns button');
+        btns.forEach(btn => btn.disabled = false);
+        document.getElementById('feedback-text').innerText = '';
+    }
+
+    // Trả lời
+    function answerQuestion(userAnswer) {
+        // Khóa nút để tránh bấm 2 lần
+        const btns = document.querySelectorAll('.answer-btns button');
+        btns.forEach(btn => btn.disabled = true);
+
+        let p = players[turnIndex % players.length];
+        let q = currentQuestions[questionIndex];
+        let feedback = document.getElementById('feedback-text');
+
+        if (userAnswer === q.a) {
+            p.stars++;
+            feedback.innerHTML = `<span style="color:#2ecc71">✔️ CHÍNH XÁC! +1 ⭐</span><br><span style="font-size:14px; color:#555">${q.exp}</span>`;
+            document.getElementById('current-stars').innerText = `⭐ ${p.stars}`;
+        } else {
+            p.hearts--;
+            feedback.innerHTML = `<span style="color:#e74c3c">❌ SAI RỒI! -1 ❤️</span><br><span style="font-size:14px; color:#555">${q.exp}</span>`;
+            document.getElementById('current-hearts').innerText = `❤️ ${p.hearts}`;
+        }
+
+        // Chuyển câu hỏi & người chơi sau 3 giây
+        setTimeout(() => {
+            questionIndex++;
+            turnIndex++;
+            loadTurn();
+        }, 3000);
+    }
+
+    // Kết thúc & Bảng xếp hạng
+    function endGame() {
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+
+        // Sắp xếp người chơi: Cùng sao thì ai còn nhiều tim hơn sẽ xếp trên
+        players.sort((a, b) => {
+            if (b.stars !== a.stars) return b.stars - a.stars;
+            return b.hearts - a.hearts;
+        });
+
+        const board = document.getElementById('leaderboard');
+        board.innerHTML = '';
+
+        players.forEach((p, index) => {
+            let rankClass = '';
+            let medal = '';
+            if (index === 0) { rankClass = 'rank-1'; medal = '🥇'; }
+            else if (index === 1) { rankClass = 'rank-2'; medal = '🥈'; }
+            else if (index === 2) { rankClass = 'rank-3'; medal = '🥉'; }
+            else { medal = `${index + 1}.`; }
+
+            let item = document.createElement('div');
+            item.className = `leaderboard-item ${rankClass}`;
+            item.innerHTML = `
+                <div>${medal} ${p.char}${p.acc} ${p.name}</div>
+                <div>⭐ ${p.stars} | ❤️ ${p.hearts}</div>
+            `;
+            board.appendChild(item);
+        });
+    }
+</script>
+
+</body>
+</html>
